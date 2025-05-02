@@ -85,6 +85,23 @@ class AccountController {
             .toList());
   }
 
+  // Check if an account with a specific number already exists for a bank
+  Future<bool> checkAccountExists(String bankId, String accountNumber) async {
+    String? userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return false; // Or throw an error, depending on desired behavior
+
+    final querySnapshot = await _firestore
+        .collection('banks')
+        .doc(bankId)
+        .collection('accounts')
+        .where('userId', isEqualTo: userId)
+        .where('accountNumber', isEqualTo: accountNumber)
+        .limit(1) // We only need to know if at least one exists
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
+
   // Get total balance for an account type across all banks
   Future<double> getTotalBalanceByType(String accountType) async {
     String? userId = FirebaseAuth.instance.currentUser?.uid;
