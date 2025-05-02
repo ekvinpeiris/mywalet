@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "233790611719",
+    "project_id": "expence-tracker-21990",
+    "storage_bucket": "expence-tracker-21990.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:233790611719:android:c0e12ed9ffa8bd345ee5a2",
+        "android_client_info": {
+          "package_name": "com.example.my_wallet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "233790611719-0tijjdvnbdajgueqcs1rhk6c0ranj9p5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbx50TZDG6S6xo3dieIAZV6I-wkklXOBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "233790611719-0tijjdvnbdajgueqcs1rhk6c0ranj9p5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:233790611719:android:bf48234ef468f2da5ee5a2",
+        "android_client_info": {
+          "package_name": "com.expencetracker21990.myapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "233790611719-436rk37vep2vq54vhhnlil8qnfgnael8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.expencetracker21990.myapp",
+            "certificate_hash": "caf3ec73fff20de87cc2d55e75a9215560022d53"
+          }
+        },
+        {
+          "client_id": "233790611719-0tijjdvnbdajgueqcs1rhk6c0ranj9p5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbx50TZDG6S6xo3dieIAZV6I-wkklXOBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "233790611719-0tijjdvnbdajgueqcs1rhk6c0ranj9p5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,29 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "expence-tracker-21990",
+          "appId": "1:233790611719:android:c0e12ed9ffa8bd345ee5a2",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "expence-tracker-21990",
+          "configurations": {
+            "android": "1:233790611719:android:c0e12ed9ffa8bd345ee5a2",
+            "ios": "1:233790611719:ios:a77a1db38e511aef5ee5a2",
+            "macos": "1:233790611719:ios:a77a1db38e511aef5ee5a2",
+            "web": "1:233790611719:web:5eef83e3c5f2925c5ee5a2",
+            "windows": "1:233790611719:web:20ffdb94deb8a8ce5ee5a2"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

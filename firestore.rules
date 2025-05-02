@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Match any collection path
+    match /{collectionPath}/{documentId} {
+      // Allow create if the user is authenticated
+      allow create: if request.auth != null;
+
+      // Allow read, update, delete only if the user is authenticated
+      // AND the document's userId matches the requesting user's uid
+      allow read, update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+  }
+}
