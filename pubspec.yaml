@@ -19,6 +19,8 @@ dependencies:
   cloud_firestore: ^5.6.7
   get_it: ^8.0.3
   shimmer: ^3.0.0
+  file_picker: ^8.0.6 # Added for file selection
+  csv: ^6.0.0 # Added for CSV parsing
 
 dev_dependencies:
   flutter_test:

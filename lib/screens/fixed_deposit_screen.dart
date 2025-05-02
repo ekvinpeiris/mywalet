@@ -3,6 +3,7 @@ import '../models/bank_account.dart';
 import '../utils/currency_formatter.dart';
 import '../controllers/account_controller.dart';
 import '../controllers/bank_controller.dart';
+import '../services/csv_import_service.dart'; // Import the service
 import 'add_account_screen.dart';
 
 class FixedDepositScreen extends StatefulWidget {
@@ -15,8 +16,10 @@ class FixedDepositScreen extends StatefulWidget {
 class _FixedDepositScreenState extends State<FixedDepositScreen> {
   final AccountController _accountController = AccountController();
   final BankController _bankController = BankController();
+  final CsvImportService _csvImportService = CsvImportService(); // Instantiate the service
   Map<String, bool> _deletingStates = {};
-  
+  bool _isImporting = false; // State variable for import loading
+
   Stream<List<Map<String, dynamic>>> _getFixedDepositAccounts() {
     String accountType = 'Fixed Deposit';
     return _bankController.getBanks().asyncMap((banks) async {
@@ -103,6 +106,80 @@ class _FixedDepositScreenState extends State<FixedDepositScreen> {
     }
   }
 
+  Future<void> _handleCsvImport() async {
+    setState(() {
+      _isImporting = true;
+    });
+
+    try {
+      final result = await _csvImportService.importFixedDepositsFromCsv();
+
+      if (!mounted) return; // Check if the widget is still in the tree
+
+      // Prepare result message
+      String message = 'CSV Import Complete:\n'
+                       '- Total Rows Processed: ${result.totalRows}\n'
+                       '- Imported Successfully: ${result.importedCount}\n'
+                       '- Skipped (Duplicates): ${result.skippedDuplicateCount}\n'
+                       '- Skipped (Errors): ${result.skippedErrorCount}';
+
+      List<Widget> errorWidgets = [];
+      if (result.errors.isNotEmpty) {
+        message += '\n\nErrors Encountered:';
+        errorWidgets = result.errors.map((e) => Text(e, style: const TextStyle(fontSize: 12))).toList();
+      }
+
+      // Show results dialog
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Import Results'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message),
+                if (errorWidgets.isNotEmpty) const SizedBox(height: 10),
+                if (errorWidgets.isNotEmpty) const Text('Error Details:', style: TextStyle(fontWeight: FontWeight.bold)),
+                if (errorWidgets.isNotEmpty) ...errorWidgets,
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      );
+
+      // Refresh the list if any accounts were imported
+      if (result.importedCount > 0) {
+        setState(() {
+          // Trigger rebuild to fetch fresh data
+        });
+      }
+
+    } catch (e) {
+       if (!mounted) return;
+       ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(
+           content: Text('An unexpected error occurred during import: $e'),
+           backgroundColor: Colors.red,
+         ),
+       );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isImporting = false;
+        });
+      }
+    }
+  }
+
+
   String _getInterestFrequencyLabel(String frequency) {
     switch (frequency) {
       case 'on_maturity':
@@ -147,24 +224,46 @@ class _FixedDepositScreenState extends State<FixedDepositScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AddAccountScreen(selectedAccountType: 1),
-                          ),
-                        );
-                        
-                        if (result != null && result['success'] == true) {
-                          setState(() {
-                            // This will trigger a rebuild and fetch fresh data
-                          });
-                        }
-                      },
-                      icon: const Icon(Icons.add),
-                      label: const Text('Add FD'),
-                    ),
+                    Row( // Wrap buttons in a Row
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                         // Import Button
+                         _isImporting
+                            ? const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 12.0),
+                                child: SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                ),
+                              )
+                            : IconButton( // Use IconButton for space
+                                icon: const Icon(Icons.upload_file),
+                                tooltip: 'Import from CSV',
+                                onPressed: _handleCsvImport, // Call the import handler
+                              ),
+                         const SizedBox(width: 8), // Spacing between buttons
+                         // Add Button
+                         ElevatedButton.icon(
+                          onPressed: _isImporting ? null : () async { // Disable Add button during import
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const AddAccountScreen(selectedAccountType: 1),
+                              ),
+                            );
+                            
+                            if (result != null && result['success'] == true) {
+                              setState(() {
+                                // This will trigger a rebuild and fetch fresh data
+                              });
+                            }
+                          },
+                          icon: const Icon(Icons.add),
+                          label: const Text('Add FD'),
+                        ),
+                      ],
+                    )
                   ],
                 ),
                 const SizedBox(height: 24),
