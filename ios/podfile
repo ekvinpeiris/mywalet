@@ -1,0 +1,29 @@
+platform :ios, '13.0'  # Set the minimum iOS deployment version to 13.0 as per Firebase requirements
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  # Flutter-specific pods
+  flutter_application_path = '../'
+  load File.join(flutter_application_path, '.flutter-plugins')
+
+  # Firebase SDK dependencies
+  pod 'Firebase/Core', '11.10.0'
+  pod 'Firebase/Auth', '11.10.0'
+  pod 'Firebase/Firestore', '11.10.0'
+
+  # Add other dependencies you may need (for the packages you are using):
+  pod 'cupertino_icons', '1.0.2'  # For Cupertino icons
+  pod 'fl_chart', '0.66.0'        # For charting
+  pod 'shared_preferences', '2.5.3' # For shared preferences
+  pod 'connectivity_plus', '6.1.4' # For network connectivity
+  pod 'get_it', '8.0.3'            # For dependency injection
+  pod 'shimmer', '3.0.0'           # For shimmer effect
+  pod 'file_picker', '8.0.6'       # For file picking
+  pod 'csv', '6.0.0'               # For CSV parsing
+  
+  # Ensure all Flutter dependencies are correctly linked
+  pod 'Flutter', :path => '../Flutter'
+
+end
