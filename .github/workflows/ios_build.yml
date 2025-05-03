@@ -9,14 +9,21 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - uses: subosito/flutter-action@v2
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.29.2"  # set to your Flutter version
 
-      - name: Install dependencies
+      - name: Install Flutter dependencies
         run: flutter pub get
+
+      - name: Install CocoaPods dependencies
+        working-directory: ios
+        run: |
+          pod install
 
       - name: Build iOS app
         run: flutter build ios --release --no-codesign
