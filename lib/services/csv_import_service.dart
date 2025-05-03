@@ -4,6 +4,8 @@ import 'package:csv/csv.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:intl/intl.dart'; // For date parsing
+import 'package:cloud_firestore/cloud_firestore.dart'; // For Firestore
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../controllers/account_controller.dart';
 import '../controllers/bank_controller.dart';
@@ -29,6 +31,8 @@ class CsvImportResult {
 class CsvImportService {
   final AccountController _accountController = AccountController();
   final BankController _bankController = BankController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // Expected CSV Headers (case-insensitive check)
   final List<String> _expectedHeaders = [
@@ -41,6 +45,64 @@ class CsvImportService {
     'duration in months',
     'interest payout frequency',
   ];
+
+  // Helper method to parse duration string to months
+  int? parseDurationToMonths(String durationStr) {
+    durationStr = durationStr.toLowerCase().trim();
+    
+    // Try direct number first
+    int? months = int.tryParse(durationStr);
+    if (months != null) return months;
+
+    // Remove multiple spaces and standardize format
+    durationStr = durationStr.replaceAll(RegExp(r'\s+'), ' ');
+    
+    // Parse different formats
+    RegExp yearPattern = RegExp(r'^([\d.]+)\s*(?:year|yr|y)s?$');
+    RegExp monthPattern = RegExp(r'^([\d.]+)\s*(?:month|mon|m)s?$');
+    
+    if (yearPattern.hasMatch(durationStr)) {
+      final match = yearPattern.firstMatch(durationStr)!;
+      double years = double.parse(match.group(1)!);
+      return (years * 12).round();
+    }
+    
+    if (monthPattern.hasMatch(durationStr)) {
+      final match = monthPattern.firstMatch(durationStr)!;
+      double months = double.parse(match.group(1)!);
+      return months.round();
+    }
+
+    // Handle combined format like "1 year 6 months"
+    if (durationStr.contains('year') && durationStr.contains('month')) {
+      List<String> parts = durationStr.split(RegExp(r'\s+and\s+|\s+'));
+      int totalMonths = 0;
+      
+      for (int i = 0; i < parts.length - 1; i++) {
+        if (parts[i + 1].startsWith('year')) {
+          double years = double.parse(parts[i]);
+          totalMonths += (years * 12).round();
+        } else if (parts[i + 1].startsWith('month')) {
+          totalMonths += double.parse(parts[i]).round();
+        }
+      }
+      
+      if (totalMonths > 0) return totalMonths;
+    }
+
+    return null;
+  }
+
+  
+  // Helper method to format interest rate
+  double standardizeInterestRate(double rate) {
+    // Convert percentage to decimal if needed (e.g., 5.5% -> 0.055)
+    if (rate > 1) {
+      rate = rate / 100;
+    }
+    // Round to 4 decimal places
+    return double.parse(rate.toStringAsFixed(4));
+  }
 
   Future<CsvImportResult> importFixedDepositsFromCsv() async {
     int totalRows = 0;
@@ -55,9 +117,10 @@ class CsvImportService {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['csv'],
+        withData: true, // Ensure we get the bytes for web platform
       );
 
-      if (result == null || result.files.single.path == null) {
+      if (result == null) {
         errors.add('File selection cancelled.');
         return CsvImportResult(
             totalRows: 0,
@@ -67,25 +130,20 @@ class CsvImportService {
             errors: errors);
       }
 
-      String? filePath = result.files.single.path;
-      Uint8List? fileBytes = result.files.single.bytes;
-
       String csvString;
-      if (fileBytes != null) {
-        // Used for web or when bytes are available
-        csvString = utf8.decode(fileBytes);
-      } else if (filePath != null) {
-        // Used for mobile/desktop
-        final file = File(filePath);
-        csvString = await file.readAsString();
+      if (kIsWeb || result.files.single.bytes != null) {
+        // For web platform or when bytes are available
+        if (result.files.single.bytes == null) {
+          throw Exception('File bytes are not available');
+        }
+        csvString = utf8.decode(result.files.single.bytes!);
       } else {
-        errors.add('Could not read the selected file.');
-        return CsvImportResult(
-            totalRows: 0,
-            importedCount: 0,
-            skippedDuplicateCount: 0,
-            skippedErrorCount: 1,
-            errors: errors);
+        // For mobile/desktop platforms
+        if (result.files.single.path == null) {
+          throw Exception('File path is not available');
+        }
+        final file = File(result.files.single.path!);
+        csvString = await file.readAsString();
       }
 
       // 2. Parse CSV
@@ -172,7 +230,7 @@ class CsvImportService {
         // Principal Amount parsing
         double? principalAmount;
         if (errorForRow == null) {
-          principalAmount = double.tryParse(principalAmountStr);
+          principalAmount = double.tryParse(principalAmountStr.replaceAll(RegExp(r'[^0-9.]'), ''));
           if (principalAmount == null) {
             errorForRow = 'Invalid Principal Amount format: "$principalAmountStr".';
           } else if (principalAmount < 0) {
@@ -206,6 +264,8 @@ class CsvImportService {
             if (headerIndexMap.containsKey('interest rate')) {
                 String rateStr = row[headerIndexMap['interest rate']!].toString().trim();
                 if (rateStr.isNotEmpty) {
+                    // Remove any non-numeric characters except decimal point
+                    rateStr = rateStr.replaceAll(RegExp(r'[^0-9.]'), '');
                     interestRate = double.tryParse(rateStr);
                     if (interestRate == null) errorForRow = 'Invalid Interest Rate format: "$rateStr".';
                     else if (interestRate < 0) errorForRow = 'Interest Rate cannot be negative.';
@@ -240,9 +300,12 @@ class CsvImportService {
             if (errorForRow == null && headerIndexMap.containsKey('duration in months')) {
                  String durationStr = row[headerIndexMap['duration in months']!].toString().trim();
                  if (durationStr.isNotEmpty) {
-                     durationInMonths = int.tryParse(durationStr);
-                     if (durationInMonths == null) errorForRow = 'Invalid Duration format: "$durationStr".';
-                     else if (durationInMonths <= 0) errorForRow = 'Duration must be positive.';
+                     durationInMonths = parseDurationToMonths(durationStr);
+                     if (durationInMonths == null) {
+                       errorForRow = 'Invalid Duration format: "$durationStr". Examples: "12", "1 year", "6 months", "1.5 years", "1 year 6 months"';
+                     } else if (durationInMonths <= 0) {
+                       errorForRow = 'Duration must be positive.';
+                     }
                  }
             }
 
@@ -250,10 +313,10 @@ class CsvImportService {
             if (errorForRow == null && headerIndexMap.containsKey('interest payout frequency')) {
                 String freqStr = row[headerIndexMap['interest payout frequency']!].toString().trim().toLowerCase();
                  if (freqStr.isNotEmpty) {
-                     if (['on_maturity', 'monthly', 'annually'].contains(freqStr)) {
+                     if (['maturity', 'monthly', 'annually'].contains(freqStr)) {
                          interestPayoutFrequency = freqStr;
                      } else {
-                         errorForRow = 'Invalid Interest Payout Frequency: "$freqStr". Allowed: on_maturity, monthly, annually.';
+                         errorForRow = 'Invalid Interest Payout Frequency: "$freqStr". Allowed: maturity, monthly, annually.';
                      }
                  }
             }
@@ -270,29 +333,76 @@ class CsvImportService {
             bankId: foundBank!.id!, // We know foundBank is not null here
             accountNumber: accountNumber,
             accountType: 'Fixed Deposit', // Hardcoded type
-            balance: principalAmount!, // We know principalAmount is not null
-            interestRate: interestRate,
-            startDate: startDate,
-            maturityDate: maturityDate,
+            balance: double.parse(principalAmount!.toStringAsFixed(2)), // Round to 2 decimal places
+            interestRate: interestRate != null ? standardizeInterestRate(interestRate) : null,
+            startDate: startDate?.toLocal(), // Ensure dates are in local timezone
+            maturityDate: maturityDate?.toLocal(),
             durationInMonths: durationInMonths,
-            interestPayoutFrequency: interestPayoutFrequency,
+            interestPayoutFrequency: interestPayoutFrequency?.toLowerCase(), // Standardize to lowercase
             // userId will be set by the controller/service during save
           ));
         }
       }
 
-      // 6. Save Valid Accounts (Batch write might be better for large files)
+      // 6. Save Valid Accounts using Firestore batch
       if (accountsToSave.isNotEmpty) {
-        // Assuming AccountController handles setting the userId
-        // TODO: Consider adding a batch save method to AccountController
+        WriteBatch batch = _firestore.batch();
+        final user = _auth.currentUser;
+      
+        if (user == null) {
+          throw Exception('No authenticated user found');
+        }
+
         for (var account in accountsToSave) {
           try {
-            await _accountController.addAccount(account.bankId!, account);
+            if (account.bankId == null) {
+              throw Exception('Bank ID is required');
+            }
+
+            // Create a new document reference
+            DocumentReference accountRef = _firestore
+                .collection('banks')
+                .doc(account.bankId)
+                .collection('accounts')
+                .doc(); // Firestore will generate a unique ID
+
+            // Set the account ID
+            account.id = accountRef.id;
+
+            // Convert account to Map with standardized formats
+            Map<String, dynamic> accountData = {
+              'id': account.id,
+              'bankId': account.bankId,
+              'accountNumber': account.accountNumber,
+              'accountType': account.accountType,
+              'balance': account.balance,
+              'interestRate': account.interestRate,
+              'startDate': account.startDate?.millisecondsSinceEpoch, // Store as timestamp
+              'maturityDate': account.maturityDate?.millisecondsSinceEpoch,
+              'durationInMonths': account.durationInMonths,
+              'interestPayoutFrequency': account.interestPayoutFrequency,
+              'createdAt': FieldValue.serverTimestamp(),
+              'userId': user.uid,
+              'lastUpdated': FieldValue.serverTimestamp(),
+            };
+
+            // Add to batch
+            batch.set(accountRef, accountData);
             importedCount++;
           } catch (e) {
-            errors.add('Error saving account ${account.accountNumber} for bank ${account.bankId}: $e');
-            skippedErrorCount++; // Count save errors
+            errors.add('Error preparing account ${account.accountNumber} for bank ${account.bankId}: $e');
+            skippedErrorCount++;
           }
+        }
+
+        // Commit the batch
+        try {
+          await batch.commit();
+        } catch (e) {
+          errors.add('Error saving accounts to Firestore: $e');
+          // Reset counts since batch failed
+          skippedErrorCount += importedCount;
+          importedCount = 0;
         }
       }
     } catch (e) {

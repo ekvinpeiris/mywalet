@@ -25,15 +25,16 @@ class _FixedDepositScreenState extends State<FixedDepositScreen> {
     return _bankController.getBanks().asyncMap((banks) async {
       List<Map<String, dynamic>> allAccounts = [];
       for (var bank in banks) {
-        if (bank.id != null) {
+        if (bank.id != null && bank.id!.isNotEmpty) {  // Check for non-empty string ID
           final accounts = await _accountController.getAccountsByType(bank.id!, accountType).first;
           for (var account in accounts) {
-            account.bankId = bank.id;  // Ensure bankId is set
-            allAccounts.add({
-              'account': account,
-              'bankName': bank.bankName,
-              'bankId': bank.id,
-            });
+            if (account != null) {  // Ensure account exists
+              allAccounts.add({
+                'account': account,
+                'bankName': bank.bankName ?? '',
+                'bankId': bank.id,
+              });
+            }
           }
         }
       }
@@ -182,7 +183,7 @@ class _FixedDepositScreenState extends State<FixedDepositScreen> {
 
   String _getInterestFrequencyLabel(String frequency) {
     switch (frequency) {
-      case 'on_maturity':
+      case 'maturity':
         return 'On Maturity';
       case 'monthly':
         return 'Monthly';

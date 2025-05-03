@@ -48,7 +48,7 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
 
   String? _selectedInterestFrequency;
   final List<Map<String, String>> _interestFrequencyOptions = [
-    {'value': 'on_maturity', 'label': 'On Maturity'},
+    {'value': 'maturity', 'label': 'On Maturity'},
     {'value': 'monthly', 'label': 'Monthly'},
     {'value': 'annually', 'label': 'Annually'},
   ];

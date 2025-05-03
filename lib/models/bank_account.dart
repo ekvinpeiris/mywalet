@@ -9,7 +9,7 @@ class BankAccount {
   DateTime? maturityDate;
   double? interestRate;
   int? durationInMonths;
-  String? interestPayoutFrequency;  // 'on_maturity', 'monthly', 'annually'
+  String? interestPayoutFrequency;  // 'maturity', 'monthly', 'annually'
 
   BankAccount({
     this.id,
