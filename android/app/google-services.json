@@ -29,6 +29,13 @@
             {
               "client_id": "233790611719-0tijjdvnbdajgueqcs1rhk6c0ranj9p5.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "233790611719-ikjhlatbjriovlqdjrobq8ba8cgmcrc9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.myWallet"
+              }
             }
           ]
         }
@@ -66,6 +73,13 @@
             {
               "client_id": "233790611719-0tijjdvnbdajgueqcs1rhk6c0ranj9p5.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "233790611719-ikjhlatbjriovlqdjrobq8ba8cgmcrc9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.myWallet"
+              }
             }
           ]
         }

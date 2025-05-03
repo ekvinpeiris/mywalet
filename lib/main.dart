@@ -21,7 +21,7 @@ void main() async {
     FirebaseFirestore.instance.settings = const Settings(
       persistenceEnabled: true,
     );
-    getItInitialization();
+
     runApp(const MyApp());
   } catch (e, stackTrace) {
     print('Error initializing app: $e\n$stackTrace');
@@ -116,11 +116,13 @@ class _MyAppState extends State<MyApp> {
                           elevation: 4,
                           iconTheme: const IconThemeData(color: Colors.black87),
                           leading: MediaQuery.of(context).size.width < 600
-                              ? IconButton(
-                                  icon: const Icon(Icons.menu),
-                                  onPressed: () {
-                                    Scaffold.of(context).openDrawer();
-                                  },
+                              ? Builder(
+                                  builder: (context) => IconButton(
+                                    icon: const Icon(Icons.menu),
+                                    onPressed: () {
+                                      Scaffold.of(context).openDrawer();
+                                    },
+                                  ),
                                 )
                               : null,
                           actions: [

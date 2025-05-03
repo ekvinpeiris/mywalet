@@ -35,11 +35,11 @@ class AppNavigation extends StatelessWidget {
       ),
     );
 
-    if (shouldSignOut == true && context.mounted) {
+    if (shouldSignOut == true) {
       try {
+        await Preferences.clearAuthToken();
         final authService = FirebaseAuthService();
         await authService.signOut();
-        await Preferences.clearAuthToken();
         if (context.mounted) {
           Navigator.pushReplacementNamed(context, '/signin');
         }

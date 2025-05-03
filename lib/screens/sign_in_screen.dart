@@ -35,18 +35,19 @@ class _SignInScreenState extends State<SignInScreen> {
           _emailController.text.trim(),
           _passwordController.text,
         );
-        
+
         if (!mounted) return;
 
         // Store the user's ID token
         final idToken = await userCredential.user?.getIdToken();
         await Preferences.setAuthToken(idToken ?? '');
-        
+
         // Navigate to home screen and remove all previous routes
-        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/home', (route) => false);
       } catch (e) {
         if (!mounted) return;
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString()),
@@ -66,10 +67,6 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign In'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -87,12 +84,18 @@ class _SignInScreenState extends State<SignInScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const Icon(
-                        Icons.account_balance_wallet,
-                        size: 50,
+                        Icons.wallet_rounded,
+                        size: 60,
                         color: Colors.blue,
                       ),
-                      const Text("Sign In to MyWallert",style: TextStyle(fontSize: 24),textAlign: TextAlign.center,),
-                      const SizedBox(height: 30,),
+                      const Text(
+                        "Sign In to MyWallert",
+                        style: TextStyle(fontSize: 24),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
                       TextFormField(
                         controller: _emailController,
                         decoration: const InputDecoration(
@@ -120,7 +123,9 @@ class _SignInScreenState extends State<SignInScreen> {
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                              _isPasswordVisible
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                             ),
                             onPressed: () {
                               setState(() {
@@ -142,17 +147,28 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       const SizedBox(height: 24),
                       SizedBox(
-                        height: 45,
+                        height: 55,
                         child: ElevatedButton(
+
                           onPressed: _isLoading ? null : _handleSignIn,
                           style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            padding: const EdgeInsets.symmetric(vertical: 5),
                             backgroundColor: Colors.blue,
                             foregroundColor: Colors.white,
+                            elevation: 5,
+
                           ),
                           child: _isLoading
-                              ? const CircularProgressIndicator()
-                              : const Text('Sign In'),
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 1,
+                                  ))
+                              : const Text('Sign In',style: TextStyle(
+                            fontSize: 16
+                          ),),
                         ),
                       ),
                     ],
