@@ -1,29 +1,51 @@
-platform :ios, '13.0'  # Set the minimum iOS deployment version to 13.0 as per Firebase requirements
+# Uncomment this line to define a global platform for your project
+platform :ios, '12.0'
+
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_ios_podfile_setup
 
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
-  # Flutter-specific pods
-  flutter_application_path = '../'
-  load File.join(flutter_application_path, '.flutter-plugins')
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
-  # Firebase SDK dependencies
-  pod 'Firebase/Core', '11.10.0'
-  pod 'Firebase/Auth', '11.10.0'
-  pod 'Firebase/Firestore', '11.10.0'
+  # Add any additional pods you need here
+end
 
-  # Add other dependencies you may need (for the packages you are using):
-  pod 'cupertino_icons', '1.0.2'  # For Cupertino icons
-  pod 'fl_chart', '0.66.0'        # For charting
-  pod 'shared_preferences', '2.5.3' # For shared preferences
-  pod 'connectivity_plus', '6.1.4' # For network connectivity
-  pod 'get_it', '8.0.3'            # For dependency injection
-  pod 'shimmer', '3.0.0'           # For shimmer effect
-  pod 'file_picker', '8.0.6'       # For file picking
-  pod 'csv', '6.0.0'               # For CSV parsing
-  
-  # Ensure all Flutter dependencies are correctly linked
-  pod 'Flutter', :path => '../Flutter'
-
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    
+    # Start of target configuration
+    target.build_configurations.each do |config|
+      config.build_settings['ENABLE_BITCODE'] = 'NO'
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+      
+      # Add any additional build settings here
+    end
+  end
 end
