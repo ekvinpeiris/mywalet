@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_wallert/utils/currency_formatter.dart';
 import 'package:my_wallert/widgets/app_navigation.dart';
 import '../controllers/bank_controller.dart';
 

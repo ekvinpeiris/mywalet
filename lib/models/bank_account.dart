@@ -10,6 +10,20 @@ class BankAccount {
   double? interestRate;
   int? durationInMonths;
   String? interestPayoutFrequency;  // 'maturity', 'monthly', 'annually'
+  
+  // Treasury Bill specific fields
+  String? instrumentType;  // 'bill' or 'bond'
+  int? period;  // 91 or 180 days for Treasury Bills
+  String? isin;
+  String? dealSlipNumber;
+  double? faceValue;
+  double? investmentValue;
+  double? yieldPercentage;
+  
+  // Bond specific fields
+  double? couponRate;
+  DateTime? nextCouponDate;
+  double? couponValue;
 
   BankAccount({
     this.id,
@@ -23,6 +37,18 @@ class BankAccount {
     this.interestRate,
     this.durationInMonths,
     this.interestPayoutFrequency,
+    // Treasury Bill fields
+    this.instrumentType,
+    this.period,
+    this.isin,
+    this.dealSlipNumber,
+    this.faceValue,
+    this.investmentValue,
+    this.yieldPercentage,
+    // Bond specific fields
+    this.couponRate,
+    this.nextCouponDate,
+    this.couponValue,
   });
 
   Map<String, dynamic> toMap() {
@@ -38,6 +64,18 @@ class BankAccount {
       'interestRate': interestRate,
       'durationInMonths': durationInMonths,
       'interestPayoutFrequency': interestPayoutFrequency,
+      // Treasury Bill fields
+      'instrumentType': instrumentType,
+      'period': period,
+      'isin': isin,
+      'dealSlipNumber': dealSlipNumber,
+      'faceValue': faceValue,
+      'investmentValue': investmentValue,
+      'yieldPercentage': yieldPercentage,
+      // Bond specific fields
+      'couponRate': couponRate,
+      'nextCouponDate': nextCouponDate?.millisecondsSinceEpoch,
+      'couponValue': couponValue,
     };
   }
 
@@ -54,6 +92,18 @@ class BankAccount {
       interestRate: map['interestRate']?.toDouble(),
       durationInMonths: map['durationInMonths'],
       interestPayoutFrequency: map['interestPayoutFrequency'],
+      // Treasury Bill fields
+      instrumentType: map['instrumentType'],
+      period: map['period'],
+      isin: map['isin'],
+      dealSlipNumber: map['dealSlipNumber'],
+      faceValue: map['faceValue']?.toDouble(),
+      investmentValue: map['investmentValue']?.toDouble(),
+      yieldPercentage: map['yieldPercentage']?.toDouble(),
+      // Bond specific fields
+      couponRate: map['couponRate']?.toDouble(),
+      nextCouponDate: map['nextCouponDate'] != null ? DateTime.fromMillisecondsSinceEpoch(map['nextCouponDate']) : null,
+      couponValue: map['couponValue']?.toDouble(),
     );
   }
 }

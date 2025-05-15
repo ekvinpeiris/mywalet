@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:my_wallert/screens/treasury_bill_screen.dart';
 import 'package:my_wallert/services/get_it_service.dart';
 import 'firebase_options.dart';
 import 'screens/fixed_deposit_screen.dart';
@@ -10,6 +11,7 @@ import 'screens/dashboard_screen.dart';
 import 'screens/savings_screen.dart';
 import 'screens/bank_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/unity_trust_screen.dart';
 import 'widgets/app_navigation.dart';
 
 void main() async {
@@ -61,8 +63,12 @@ class _MyAppState extends State<MyApp> {
       case 2:
         return const FixedDepositScreen();
       case 3:
-        return const BankScreen();
+        return const TreasuryBillScreen();
       case 4:
+        return const UnityTrustScreen();
+      case 5:
+        return const BankScreen();
+      case 6:
         return const SettingsScreen();
       default:
         return const SettingsScreen();

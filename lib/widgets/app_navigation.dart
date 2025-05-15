@@ -128,8 +128,8 @@ class AppNavigation extends StatelessWidget {
               ),
               ListTile(
                 selected: selectedIndex == 3,
-                leading: const Icon(Icons.account_balance),
-                title: const Text('Banks'),
+                leading: const Icon(Icons.lock),
+                title: const Text('Treasury Bill'),
                 onTap: () {
                   onDestinationSelected(3);
                   if (!isDesktop) {
@@ -139,10 +139,32 @@ class AppNavigation extends StatelessWidget {
               ),
               ListTile(
                 selected: selectedIndex == 4,
+                leading: const Icon(Icons.lock),
+                title: const Text('Unity Trust'),
+                onTap: () {
+                  onDestinationSelected(4);
+                  if (!isDesktop) {
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+              ListTile(
+                selected: selectedIndex == 5,
+                leading: const Icon(Icons.account_balance),
+                title: const Text('Banks'),
+                onTap: () {
+                  onDestinationSelected(5);
+                  if (!isDesktop) {
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+              ListTile(
+                selected: selectedIndex == 6,
                 leading: const Icon(Icons.settings),
                 title: const Text('Settings'),
                 onTap: () {
-                  onDestinationSelected(4);
+                  onDestinationSelected(6);
                   if (!isDesktop) {
                     Navigator.pop(context);
                   }
