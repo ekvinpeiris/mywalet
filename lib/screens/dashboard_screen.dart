@@ -210,6 +210,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
@@ -242,11 +243,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ],
                   ),
-                  ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.add),
-                    label: const Text('Add Account'),
-                  ),
+
                 ],
               ),
               const SizedBox(height: 24),

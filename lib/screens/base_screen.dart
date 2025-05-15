@@ -27,7 +27,7 @@ class _BaseScreenState extends State<BaseScreen> {
               children: [
                 AppBar(
                   backgroundColor: Colors.white,
-                  elevation: 4,
+                  elevation: 2,
                   iconTheme: const IconThemeData(color: Colors.black87),
                   leading: MediaQuery.of(context).size.width < 600
                       ? Builder(

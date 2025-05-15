@@ -87,7 +87,8 @@ class _AppNavigationState extends State<AppNavigation> {
         final isDesktop = constraints.maxWidth >= 600;
         
         return Drawer(
-          elevation: isDesktop ? 0 : 0,
+          elevation: 2,
+          backgroundColor: Colors.white,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.horizontal(
               right: Radius.circular(0),
@@ -97,7 +98,7 @@ class _AppNavigationState extends State<AppNavigation> {
             children: [
               UserAccountsDrawerHeader(
                 decoration: const BoxDecoration(
-                  color: Colors.blue,
+                  color: Colors.indigo,
                 ),
                 accountName: const Text('My Wallet'),
                 accountEmail: Text(
