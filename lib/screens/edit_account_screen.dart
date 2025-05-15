@@ -130,6 +130,39 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     super.dispose();
   }
 
+  InputDecoration _getInputDecoration(String label, {String? prefixText, String? suffixText, String? helperText}) {
+    return InputDecoration(
+      labelText: label,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Colors.blue.shade400, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Colors.red.shade300),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Colors.red.shade400, width: 2),
+      ),
+      filled: true,
+      fillColor: Colors.grey.shade50,
+      labelStyle: TextStyle(color: Colors.grey.shade700),
+      prefixText: prefixText,
+      suffixText: suffixText,
+      helperText: helperText,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseScreen(
@@ -141,30 +174,50 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 2,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const Text(
+                        'Account Details',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
                       StreamBuilder<String>(
                         stream: BankController().getBankName(widget.bankId),
                         builder: (context, snapshot) {
                           return Text(
                             'Bank: ${snapshot.data ?? 'Loading...'}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[700],
                             ),
                           );
                         },
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
-                        value: _selectedAccountType,
-                        decoration: const InputDecoration(
-                          labelText: 'Account Type',
-                          border: OutlineInputBorder(),
-                        ),
+                        value: _selectedAccountType,                        decoration: _getInputDecoration('Account Type'),
                         items: _accountTypes.map((type) {
                           return DropdownMenuItem(
                             value: type,
@@ -178,9 +231,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         const SizedBox(height: 16),
                         DropdownButtonFormField<String>(
                           value: _selectedInstrumentType,
-                          decoration: const InputDecoration(
-                            labelText: 'Instrument Type *',
-                            border: OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'Instrument Type *',
                             helperText: 'Required: Select bill or bond type',
                           ),
                           items: _instrumentTypes.map((type) {
@@ -204,9 +256,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _isinController,
-                          decoration: const InputDecoration(
-                            labelText: 'ISIN *',
-                            border: OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'ISIN *',
                             helperText: 'Required: Enter the International Securities Identification Number',
                           ),
                           textCapitalization: TextCapitalization.characters,
@@ -220,9 +271,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _dealSlipNumberController,
-                          decoration: const InputDecoration(
-                            labelText: 'Deal Slip Number *',
-                            border: OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'Deal Slip Number *',
                             helperText: 'Required: Enter the deal slip/reference number',
                           ),
                           validator: (value) {
@@ -240,10 +290,11 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                                 ? '${_startDate!.day}/${_startDate!.month}/${_startDate!.year}'
                                 : '',
                           ),
-                          decoration: InputDecoration(
-                            labelText: 'Start Date *',
-                            border: const OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'Start Date *',
                             helperText: 'Required: Select the issue date',
+                            suffixText: null,
+                          ).copyWith(
                             suffixIcon: IconButton(
                               icon: const Icon(Icons.calendar_today),
                               onPressed: () async {
@@ -276,9 +327,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _periodController,
-                          decoration: const InputDecoration(
-                            labelText: 'Period in Days *',
-                            border: OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'Period in Days *',
                             helperText: 'Required: Enter the period (e.g., 91, 182, or 364 days)',
                           ),
                           keyboardType: TextInputType.number,
@@ -313,18 +363,16 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                                 ? '${_maturityDate!.day}/${_maturityDate!.month}/${_maturityDate!.year}'
                                 : '',
                           ),
-                          decoration: const InputDecoration(
-                            labelText: 'Maturity Date',
-                            border: OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'Maturity Date',
                             helperText: 'Auto-calculated based on start date and period',
                           ),
                         ),
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _faceValueController,
-                          decoration: const InputDecoration(
-                            labelText: 'Face Value *',
-                            border: OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'Face Value *',
                             prefixText: 'Rs ',
                             helperText: 'Required: Enter the face value/par value',
                           ),
@@ -349,9 +397,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _investmentValueController,
-                          decoration: const InputDecoration(
-                            labelText: 'Investment Value *',
-                            border: OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'Investment Value *',
                             prefixText: 'Rs ',
                             helperText: 'Required: Enter the actual investment amount',
                           ),
@@ -369,9 +416,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _yieldPercentageController,
-                          decoration: const InputDecoration(
-                            labelText: 'Yield Percentage *',
-                            border: OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'Yield Percentage *',
                             suffixText: '%',
                             helperText: 'Required: Enter the yield percentage',
                           ),
@@ -391,9 +437,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                           const SizedBox(height: 16),
                           TextFormField(
                             controller: _couponRateController,
-                            decoration: const InputDecoration(
-                              labelText: 'Coupon Rate *',
-                              border: OutlineInputBorder(),
+                            decoration: _getInputDecoration(
+                              'Coupon Rate *',
                               suffixText: '%',
                               helperText: 'Required for bonds: Enter the coupon rate',
                             ),
@@ -416,10 +461,10 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                                   ? '${_nextCouponDate!.day}/${_nextCouponDate!.month}/${_nextCouponDate!.year}'
                                   : '',
                             ),
-                            decoration: InputDecoration(
-                              labelText: 'Next Coupon Date *',
-                              border: const OutlineInputBorder(),
+                            decoration: _getInputDecoration(
+                              'Next Coupon Date *',
                               helperText: 'Required for bonds: Select next coupon payment date',
+                            ).copyWith(
                               suffixIcon: IconButton(
                                 icon: const Icon(Icons.calendar_today),
                                 onPressed: () async {
@@ -447,9 +492,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                           const SizedBox(height: 16),
                           TextFormField(
                             controller: _couponValueController,
-                            decoration: const InputDecoration(
-                              labelText: 'Coupon Value *',
-                              border: OutlineInputBorder(),
+                            decoration: _getInputDecoration(
+                              'Coupon Value *',
                               prefixText: 'Rs ',
                               helperText: 'Required for bonds: Enter the coupon payment amount',
                             ),
@@ -470,10 +514,10 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         // Start Date
                         TextFormField(
                           readOnly: true,
-                          decoration: InputDecoration(
-                            labelText: 'Start Date *',
-                            border: const OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'Start Date *',
                             helperText: 'Required: Select the start date of the deposit',
+                          ).copyWith(
                             suffixIcon: IconButton(
                               icon: const Icon(Icons.calendar_today),
                               onPressed: () async {
@@ -515,9 +559,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         // Maturity Date (Read-only)
                         TextFormField(
                           readOnly: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Maturity Date',
-                            border: OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'Maturity Date',
                             helperText: 'Auto-calculated based on start date and duration',
                           ),
                           controller: TextEditingController(
@@ -530,9 +573,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         // Interest Rate
                         TextFormField(
                           controller: _interestRateController,
-                          decoration: const InputDecoration(
-                            labelText: 'Interest Rate *',
-                            border: OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'Interest Rate *',
                             suffixText: '%',
                             helperText: 'Required: Enter the interest rate percentage',
                           ),
@@ -551,9 +593,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         // Duration in Months
                         DropdownButtonFormField<int>(
                           value: _selectedDuration,
-                          decoration: const InputDecoration(
-                            labelText: 'Duration *',
-                            border: OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'Duration *',
                             helperText: 'Required: Select the duration of the deposit',
                           ),
                           items: _durationOptions.map((months) {
@@ -586,9 +627,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         // Interest Payout Frequency
                         DropdownButtonFormField<String>(
                           value: _selectedInterestFrequency,
-                          decoration: const InputDecoration(
-                            labelText: 'Interest Payout Frequency *',
-                            border: OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'Interest Payout Frequency *',
                             helperText: 'Required: Select how often the interest is paid out',
                           ),
                           items: _interestFrequencyOptions.map((option) {
@@ -613,10 +653,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _nameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Account Name/Number',
-                            border: OutlineInputBorder(),
-                          ),
+                          decoration: _getInputDecoration('Account Name/Number'),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter account name or number';
@@ -627,9 +664,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           controller: _balanceController,
-                          decoration: const InputDecoration(
-                            labelText: 'Balance',
-                            border: OutlineInputBorder(),
+                          decoration: _getInputDecoration(
+                            'Balance',
                             prefixText: 'Rs ',
                           ),
                           keyboardType: TextInputType.number,
@@ -648,9 +684,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _noteController,
-                        decoration: const InputDecoration(
-                          labelText: 'Note',
-                          border: OutlineInputBorder(),
+                        decoration: _getInputDecoration(
+                          'Note',
                           helperText: 'Optional: Add any additional notes or comments',
                         ),
                         maxLines: 3,  // Allow multiple lines for notes

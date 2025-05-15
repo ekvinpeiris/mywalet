@@ -291,8 +291,38 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
                           return null;
                         },
                       ),
+                      const SizedBox(height: 16),
                     ],
                     if (_selectedAccountType == 'Fixed Deposit') ...[
+                      DropdownButtonFormField<int>(
+                        value: _selectedDuration,
+                        decoration: _getInputDecoration('Duration'),
+                        items: _durationOptions.map((months) {
+                          return DropdownMenuItem(
+                            value: months,
+                            child: Text(
+                                '${months} ${months == 1 ? 'month' : 'months'}'),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedDuration = value;
+                            // Update maturity date based on selected duration
+                            if (_startDate != null && value != null) {
+                              _maturityDate = DateTime(_startDate!.year,
+                                  _startDate!.month + value, _startDate!.day);
+                            }
+                          });
+                        },
+                        validator: (value) {
+                          if (_selectedAccountType == 'Fixed Deposit' &&
+                              value == null) {
+                            return 'Please select duration';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
                       TextFormField(
                         readOnly: true,
                         decoration: _getInputDecoration('Start Date').copyWith(
@@ -390,35 +420,6 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
                           }
                           if (double.tryParse(value) == null) {
                             return 'Please enter a valid number';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<int>(
-                        value: _selectedDuration,
-                        decoration: _getInputDecoration('Duration'),
-                        items: _durationOptions.map((months) {
-                          return DropdownMenuItem(
-                            value: months,
-                            child: Text(
-                                '${months} ${months == 1 ? 'month' : 'months'}'),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedDuration = value;
-                            // Update maturity date based on selected duration
-                            if (_startDate != null && value != null) {
-                              _maturityDate = DateTime(_startDate!.year,
-                                  _startDate!.month + value, _startDate!.day);
-                            }
-                          });
-                        },
-                        validator: (value) {
-                          if (_selectedAccountType == 'Fixed Deposit' &&
-                              value == null) {
-                            return 'Please select duration';
                           }
                           return null;
                         },

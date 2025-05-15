@@ -182,6 +182,22 @@ class _FixedDepositScreenState extends State<FixedDepositScreen> {
     }
   }
 
+  // Separate active and matured deposits
+  List<Map<String, dynamic>> _getActiveDeposits(List<Map<String, dynamic>> deposits) {
+    final now = DateTime.now();
+    return deposits.where((d) {
+      final account = d['account'] as BankAccount;
+      return account.maturityDate != null && account.maturityDate!.isAfter(now);
+    }).toList();
+  }
+
+  List<Map<String, dynamic>> _getMaturedDeposits(List<Map<String, dynamic>> deposits) {
+    final now = DateTime.now();
+    return deposits.where((d) {
+      final account = d['account'] as BankAccount;
+      return account.maturityDate != null && !account.maturityDate!.isAfter(now);
+    }).toList();
+  }
 
   String _getInterestFrequencyLabel(String frequency) {
     switch (frequency) {
@@ -338,15 +354,21 @@ class _FixedDepositScreenState extends State<FixedDepositScreen> {
                         ],
                       ),
                     ),
+                  ),                  const SizedBox(height: 24),
+                  // Active Fixed Deposits Section
+                  const Text(
+                    'Active Fixed Deposits',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 24),
-                  // Fixed Deposits List
+                  const SizedBox(height: 16),
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: fixedDeposits.length,
-                    itemBuilder: (context, index) {
-                      final accountData = fixedDeposits[index];
+                    itemCount: _getActiveDeposits(fixedDeposits).length,                    itemBuilder: (context, index) {
+                      final accountData = _getActiveDeposits(fixedDeposits)[index];
                       final account = accountData['account'];
                       final bankName = accountData['bankName'];
                       return Card(
@@ -474,6 +496,156 @@ class _FixedDepositScreenState extends State<FixedDepositScreen> {
                       );
                     },
                   ),
+                  // Matured Fixed Deposits Section
+                  if (_getMaturedDeposits(fixedDeposits).isNotEmpty) ...[
+                    const SizedBox(height: 32),
+                    const Text(
+                      'Matured Fixed Deposits',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _getMaturedDeposits(fixedDeposits).length,
+                      itemBuilder: (context, index) {
+                        final accountData = _getMaturedDeposits(fixedDeposits)[index];
+                        final account = accountData['account'];
+                        final bankName = accountData['bankName'];
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          color: Colors.grey[100], // Differentiate matured deposits visually
+                          child: ListTile(
+                            leading: const Icon(
+                              Icons.lock_open,  // Different icon for matured deposits
+                              color: Colors.grey,
+                              size: 32,
+                            ),
+                            title: Text(
+                              account.accountNumber,
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  bankName,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    if (account.interestRate != null)
+                                      Text(
+                                        'Rate: ${account.interestRate}%',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    if (account.interestRate != null && account.interestPayoutFrequency != null)
+                                      Text(
+                                        ' • ',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    if (account.interestPayoutFrequency != null)
+                                      Text(
+                                        '${_getInterestFrequencyLabel(account.interestPayoutFrequency!)}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    if (account.durationInMonths != null)
+                                      Text(
+                                        ' • ${account.durationInMonths} months',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                if (account.startDate != null) 
+                                  Text(
+                                    'Start: ${account.startDate!.day}/${account.startDate!.month}/${account.startDate!.year}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                if (account.maturityDate != null)
+                                  Text(
+                                    'Matured: ${account.maturityDate!.day}/${account.maturityDate!.month}/${account.maturityDate!.year}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                Text(
+                                  formatCurrency(account.balance),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            trailing: SizedBox(
+                              width: 100,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, color: Colors.grey),
+                                    onPressed: () async {
+                                      final result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EditAccountScreen(
+                                            bankId: account.bankId!,
+                                            account: account,
+                                          ),
+                                        ),
+                                      );
+
+                                      if (result != null && result['success'] == true) {
+                                        setState(() {
+                                          // Trigger rebuild to fetch fresh data
+                                        });
+                                      }
+                                    },
+                                  ),
+                                  _deletingStates[account.id] == true
+                                      ? const SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+                                          ),
+                                        )
+                                      : IconButton(
+                                          icon: const Icon(Icons.delete, color: Colors.grey),
+                                          onPressed: () => _deleteAccount(account.bankId, account.id, account.accountNumber),
+                                        ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ],
               );
             },
