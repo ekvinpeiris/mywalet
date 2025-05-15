@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_wallert/screens/base_screen.dart';
 import '../models/bank_account.dart'; // Changed import
 import '../models/account_group.dart';
 import '../utils/currency_formatter.dart';
@@ -32,134 +33,112 @@ class BankDetailsScreen extends StatelessWidget {
       (sum, account) => sum + account.balance,
     );
 
-    return Scaffold(
-      drawer: MediaQuery.of(context).size.width >= 600
-          ? null
-          : AppNavigation(
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (index) {
-                if (index != selectedIndex) {
-                  Navigator.of(context).pushReplacementNamed('/home');
-                }
-              },
-            ),
-      body: Row(
-        children: [
-          if (MediaQuery.of(context).size.width >= 600)
-            AppNavigation(
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (index) {
-                if (index != selectedIndex) {
-                  Navigator.of(context).pushReplacementNamed('/home');
-                }
-              },
-            ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Bank Summary Card
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      color: Colors.white,
-                      elevation: 4.0,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Icon(
-                                  Icons.account_balance,
-                                  size: 40,
-                                  color: Colors.blue,
-                                ),
-                                Text(
-                                  formatCurrency(group.totalBalance),
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                _buildStatItem(
-                                  'Total Accounts',
-                                  group.accounts.length.toString(),
-                                  Icons.account_balance_wallet,
-                                ),
-                                _buildStatItem(
-                                  'Savings',
-                                  savingsAccounts.length.toString(),
-                                  Icons.savings,
-                                ),
-                                _buildStatItem(
-                                  'Fixed Deposits',
-                                  fixedDeposits.length.toString(),
-                                  Icons.lock,
-                                ),
-                                _buildStatItem(
-                                  'Current',
-                                  currentAccounts.length.toString(),
-                                  Icons.account_balance,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    // Savings Accounts Section
-                    if (savingsAccounts.isNotEmpty) ...[
-                      _buildSectionHeader('Savings Accounts', Icons.savings, Colors.green),
-                      const SizedBox(height: 16),
-                      ...savingsAccounts.map((account) => _buildAccountCard(
-                            account,
-                            Icons.savings,
-                            Colors.green,
-                          )),
-                      const SizedBox(height: 24),
-                    ],
-                    // Fixed Deposits Section
-                    if (fixedDeposits.isNotEmpty) ...[
-                      _buildSectionHeader('Fixed Deposits', Icons.lock, Colors.orange),
-                      const SizedBox(height: 16),
-                      ...fixedDeposits.map((account) => _buildAccountCard(
-                            account,
-                            Icons.lock,
-                            Colors.orange,
-                          )),
-                      const SizedBox(height: 24),
-                    ],
-                    // Current Accounts Section
-                    if (currentAccounts.isNotEmpty) ...[
-                      _buildSectionHeader('Current Accounts', Icons.account_balance, Colors.purple),
-                      const SizedBox(height: 16),
-                      ...currentAccounts.map((account) => _buildAccountCard(
-                            account,
+    return BaseScreen(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Bank Summary Card
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                color: Colors.white,
+                elevation: 4.0,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Icon(
                             Icons.account_balance,
-                            Colors.purple,
-                          )),
+                            size: 40,
+                            color: Colors.blue,
+                          ),
+                          Text(
+                            formatCurrency(group.totalBalance),
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildStatItem(
+                            'Total Accounts',
+                            group.accounts.length.toString(),
+                            Icons.account_balance_wallet,
+                          ),
+                          _buildStatItem(
+                            'Savings',
+                            savingsAccounts.length.toString(),
+                            Icons.savings,
+                          ),
+                          _buildStatItem(
+                            'Fixed Deposits',
+                            fixedDeposits.length.toString(),
+                            Icons.lock,
+                          ),
+                          _buildStatItem(
+                            'Current',
+                            currentAccounts.length.toString(),
+                            Icons.account_balance,
+                          ),
+                        ],
+                      ),
                     ],
-                  ],
+                  ),
                 ),
               ),
-            ),
+              const SizedBox(height: 24),
+              // Savings Accounts Section
+              if (savingsAccounts.isNotEmpty) ...[
+                _buildSectionHeader(
+                    'Savings Accounts', Icons.savings, Colors.green),
+                const SizedBox(height: 16),
+                ...savingsAccounts.map((account) => _buildAccountCard(
+                      account,
+                      Icons.savings,
+                      Colors.green,
+                    )),
+                const SizedBox(height: 24),
+              ],
+              // Fixed Deposits Section
+              if (fixedDeposits.isNotEmpty) ...[
+                _buildSectionHeader(
+                    'Fixed Deposits', Icons.lock, Colors.orange),
+                const SizedBox(height: 16),
+                ...fixedDeposits.map((account) => _buildAccountCard(
+                      account,
+                      Icons.lock,
+                      Colors.orange,
+                    )),
+                const SizedBox(height: 24),
+              ],
+              // Current Accounts Section
+              if (currentAccounts.isNotEmpty) ...[
+                _buildSectionHeader(
+                    'Current Accounts', Icons.account_balance, Colors.purple),
+                const SizedBox(height: 16),
+                ...currentAccounts.map((account) => _buildAccountCard(
+                      account,
+                      Icons.account_balance,
+                      Colors.purple,
+                    )),
+              ],
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

@@ -93,12 +93,12 @@ class CsvImportService {
     return null;
   }
 
-  
-  // Helper method to format interest rate
+    // Helper method to format interest rate
   double standardizeInterestRate(double rate) {
-    // Convert percentage to decimal if needed (e.g., 5.5% -> 0.055)
-    if (rate > 1) {
-      rate = rate / 100;
+    // For interest rates, we want to store them as percentages (e.g., 5.5 for 5.5%)
+    // If someone inputs 0.055, we assume they meant 5.5%
+    if (rate < 1) {
+      rate = rate * 100;
     }
     // Round to 4 decimal places
     return double.parse(rate.toStringAsFixed(4));
