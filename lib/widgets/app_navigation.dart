@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:my_wallert/screens/bank_screen.dart';
+import 'package:my_wallert/screens/dashboard_screen.dart';
+import 'package:my_wallert/screens/fixed_deposit_screen.dart';
+import 'package:my_wallert/screens/savings_screen.dart';
+import 'package:my_wallert/screens/settings_screen.dart';
+import 'package:my_wallert/screens/treasury_bill_screen.dart';
+import 'package:my_wallert/screens/unity_trust_screen.dart';
 import '../services/firebase_auth_service.dart';
 import '../utils/preferences.dart';
 
 class AppNavigation extends StatelessWidget {
-  final int selectedIndex;
-  final Function(int) onDestinationSelected;
 
   const AppNavigation({
     super.key,
-    required this.selectedIndex,
-    required this.onDestinationSelected,
   });
 
   Future<void> _handleSignOut(BuildContext context) async {
@@ -66,7 +69,7 @@ class AppNavigation extends StatelessWidget {
         
         return Drawer(
           elevation: isDesktop ? 0 : 0,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.horizontal(
               right: Radius.circular(0),
             ),
@@ -94,80 +97,87 @@ class AppNavigation extends StatelessWidget {
                 ),
               ),
               ListTile(
-                selected: selectedIndex == 0,
                 leading: const Icon(Icons.dashboard),
                 title: const Text('Dashboard'),
                 onTap: () {
-                  onDestinationSelected(0);
-                  if (!isDesktop) {
-                    Navigator.pop(context);
-                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  DashboardScreen(),
+                    ),
+                  );
                 },
               ),
               ListTile(
-                selected: selectedIndex == 1,
                 leading: const Icon(Icons.savings),
                 title: const Text('Savings'),
                 onTap: () {
-                  onDestinationSelected(1);
-                  if (!isDesktop) {
-                    Navigator.pop(context);
-                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  const SavingsScreen(),
+                    ),
+                  );
                 },
               ),
               ListTile(
-                selected: selectedIndex == 2,
                 leading: const Icon(Icons.lock),
                 title: const Text('Fixed Deposits'),
                 onTap: () {
-                  onDestinationSelected(2);
-                  if (!isDesktop) {
-                    Navigator.pop(context);
-                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  const FixedDepositScreen(),
+                    ),
+                  );
                 },
               ),
               ListTile(
-                selected: selectedIndex == 3,
                 leading: const Icon(Icons.lock),
                 title: const Text('Treasury Bill'),
                 onTap: () {
-                  onDestinationSelected(3);
-                  if (!isDesktop) {
-                    Navigator.pop(context);
-                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  const TreasuryBillScreen(),
+                    ),
+                  );
                 },
               ),
               ListTile(
-                selected: selectedIndex == 4,
                 leading: const Icon(Icons.lock),
                 title: const Text('Unity Trust'),
                 onTap: () {
-                  onDestinationSelected(4);
-                  if (!isDesktop) {
-                    Navigator.pop(context);
-                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  const UnityTrustScreen(),
+                    ),
+                  );
                 },
               ),
               ListTile(
-                selected: selectedIndex == 5,
                 leading: const Icon(Icons.account_balance),
                 title: const Text('Banks'),
                 onTap: () {
-                  onDestinationSelected(5);
-                  if (!isDesktop) {
-                    Navigator.pop(context);
-                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  const BankScreen()
+                    ),
+                  );
                 },
               ),
               ListTile(
-                selected: selectedIndex == 6,
                 leading: const Icon(Icons.settings),
                 title: const Text('Settings'),
                 onTap: () {
-                  onDestinationSelected(6);
-                  if (!isDesktop) {
-                    Navigator.pop(context);
-                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  const SettingsScreen(),
+                    ),
+                  );
                 },
               ),
               const Spacer(),

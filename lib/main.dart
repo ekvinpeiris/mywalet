@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:my_wallert/screens/treasury_bill_screen.dart';
-import 'package:my_wallert/services/get_it_service.dart';
 import 'firebase_options.dart';
+import 'screens/base_screen.dart';
 import 'screens/fixed_deposit_screen.dart';
 import 'screens/sign_in_screen.dart';
 import 'screens/dashboard_screen.dart';
@@ -90,65 +90,8 @@ class _MyAppState extends State<MyApp> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-
           if (snapshot.hasData) {
-            return Scaffold(
-              drawer: MediaQuery.of(context).size.width >= 600
-                  ? null
-                  : AppNavigation(
-                      selectedIndex: _selectedIndex,
-                      onDestinationSelected: (int index) {
-                        setState(() {
-                          _selectedIndex = index;
-                        });
-                      },
-                    ),
-              body: Row(
-                children: [
-                  if (MediaQuery.of(context).size.width >= 600)
-                    AppNavigation(
-                      selectedIndex: _selectedIndex,
-                      onDestinationSelected: (int index) {
-                        setState(() {
-                          _selectedIndex = index;
-                        });
-                      },
-                    ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        AppBar(
-                          backgroundColor: Colors.white,
-                          elevation: 4,
-                          iconTheme: const IconThemeData(color: Colors.black87),
-                          leading: MediaQuery.of(context).size.width < 600
-                              ? Builder(
-                                  builder: (context) => IconButton(
-                                    icon: const Icon(Icons.menu),
-                                    onPressed: () {
-                                      Scaffold.of(context).openDrawer();
-                                    },
-                                  ),
-                                )
-                              : null,
-                          actions: [
-                            IconButton(
-                              icon: const Icon(Icons.notifications),
-                              onPressed: () {
-                                // TODO: Handle notification
-                              },
-                            ),
-                          ],
-                        ),
-                        Expanded(
-                          child: _getCurrentScreen(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
+            return const DashboardScreen();
           }
 
           return const SignInScreen();
