@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_wallert/screens/base_screen.dart';
+import 'package:my_wallert/screens/edit_account_screen.dart';
 import '../models/bank_account.dart';
 import '../utils/currency_formatter.dart';
 import '../controllers/account_controller.dart';
@@ -358,11 +359,24 @@ class _TreasuryBillScreenState extends State<TreasuryBillScreen> {
                                       width: 100,
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          IconButton(
+                                        children: [                                          IconButton(
                                             icon: const Icon(Icons.edit),
-                                            onPressed: () {
-                                              // TODO: Implement edit functionality
+                                            onPressed: () async {
+                                              final result = await Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => EditAccountScreen(
+                                                    bankId: account.bankId!,
+                                                    account: account,
+                                                  ),
+                                                ),
+                                              );
+
+                                              if (result != null && result['success'] == true) {
+                                                setState(() {
+                                                  // Trigger rebuild to fetch fresh data
+                                                });
+                                              }
                                             },
                                           ),
                                           _deletingStates[account.id] == true
@@ -511,10 +525,23 @@ class _TreasuryBillScreenState extends State<TreasuryBillScreen> {
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          IconButton(
-                                            icon: const Icon(Icons.edit, color: Colors.grey),
-                                            onPressed: () {
-                                              // TODO: Implement edit functionality
+                                          IconButton(                                            icon: const Icon(Icons.edit, color: Colors.grey),
+                                            onPressed: () async {
+                                              final result = await Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => EditAccountScreen(
+                                                    bankId: account.bankId!,
+                                                    account: account,
+                                                  ),
+                                                ),
+                                              );
+
+                                              if (result != null && result['success'] == true) {
+                                                setState(() {
+                                                  // Trigger rebuild to fetch fresh data
+                                                });
+                                              }
                                             },
                                           ),
                                           _deletingStates[account.id] == true

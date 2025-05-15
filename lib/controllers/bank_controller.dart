@@ -65,6 +65,19 @@ class BankController {
     return bank;
   }
 
+  // Get bank name by ID
+  Stream<String> getBankName(String bankId) {
+    return _service.getAll(
+      collection,
+      whereConditions: [
+        ['id', bankId]
+      ],
+    ).map((snapshot) {
+      if (snapshot.docs.isEmpty) return 'Unknown Bank';
+      return Bank.fromFirestore(snapshot.docs.first).bankName;
+    });
+  }
+
   // Update bank
   Future<void> updateBank(String bankId, String bankName) async {
     if (_service.currentUserId == null) {

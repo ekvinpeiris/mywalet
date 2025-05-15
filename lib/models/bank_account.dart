@@ -20,10 +20,13 @@ class BankAccount {
   double? investmentValue;
   double? yieldPercentage;
   
-  // Bond specific fields
+  // Bond specific fields  
   double? couponRate;
   DateTime? nextCouponDate;
   double? couponValue;
+  
+  // Additional fields
+  String? note;  // Optional note or comment field
 
   BankAccount({
     this.id,
@@ -45,10 +48,11 @@ class BankAccount {
     this.faceValue,
     this.investmentValue,
     this.yieldPercentage,
-    // Bond specific fields
+    // Bond specific fields    
     this.couponRate,
     this.nextCouponDate,
     this.couponValue,
+    this.note,  // Note field
   });
 
   Map<String, dynamic> toMap() {
@@ -76,6 +80,7 @@ class BankAccount {
       'couponRate': couponRate,
       'nextCouponDate': nextCouponDate?.millisecondsSinceEpoch,
       'couponValue': couponValue,
+      'note': note,  // Note field
     };
   }
 
@@ -104,6 +109,7 @@ class BankAccount {
       couponRate: map['couponRate']?.toDouble(),
       nextCouponDate: map['nextCouponDate'] != null ? DateTime.fromMillisecondsSinceEpoch(map['nextCouponDate']) : null,
       couponValue: map['couponValue']?.toDouble(),
+      note: map['note'],  // Note field
     );
   }
 }

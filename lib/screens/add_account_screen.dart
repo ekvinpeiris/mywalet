@@ -32,6 +32,7 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
   final _couponRateController = TextEditingController();
   final _couponValueController = TextEditingController();
   final _periodController = TextEditingController(); // Added period controller
+  final _noteController = TextEditingController(); // For optional notes
   final _bankController = BankController();
   final _accountController = AccountController();
   Stream<List<Bank>>? _banksStream;
@@ -120,9 +121,9 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
     _faceValueController.dispose();
     _investmentValueController.dispose();
     _yieldPercentageController.dispose();
-    _couponRateController.dispose();
-    _couponValueController.dispose();
+    _couponRateController.dispose();    _couponValueController.dispose();
     _periodController.dispose();
+    _noteController.dispose();
     super.dispose();
   }
 
@@ -242,8 +243,7 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
                         return DropdownMenuItem(
                           value: type,
                           child: Text(type),
-                        );
-                      }).toList(),
+                        );                      }).toList(),
                       onChanged: (value) {
                         setState(() {
                           _selectedAccountType = value!;
@@ -258,6 +258,7 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
                         });
                       },
                     ),
+
                     const SizedBox(height: 16),
                     if (_selectedAccountType != 'Treasury Bill') ...[
                       TextFormField(
@@ -713,6 +714,15 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
                       ),
                       const SizedBox(height: 20),
                     ],
+                    const SizedBox(height: 16),
+                    // Note field
+                    TextFormField(
+                      controller: _noteController,
+                      decoration: _getInputDecoration('Note',).copyWith(
+                        helperText: 'Optional: Add any additional notes or comments',
+                      ),
+                      maxLines: 3,  // Allow multiple lines for notes
+                    ),
                   ],
                 ),
               ),
@@ -799,11 +809,8 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
                                                   .text.isNotEmpty
                                           ? double.parse(
                                               _yieldPercentageController.text)
-                                          : null,
-                                  // Bond specific fields
-                                  couponRate: _selectedAccountType ==
-                                              'Treasury Bill' &&
-                                          _selectedInstrumentType == 'bond' &&
+                                          : null,                                  // Bond specific fields
+                                  couponRate: _selectedInstrumentType == 'bond' &&
                                           _couponRateController.text.isNotEmpty
                                       ? double.parse(_couponRateController.text)
                                       : null,
@@ -815,10 +822,10 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
                                   couponValue: _selectedAccountType ==
                                               'Treasury Bill' &&
                                           _selectedInstrumentType == 'bond' &&
-                                          _couponValueController.text.isNotEmpty
-                                      ? double.parse(
+                                          _couponValueController.text.isNotEmpty                                      ? double.parse(
                                           _couponValueController.text)
                                       : null,
+                                  note: _noteController.text.isEmpty ? null : _noteController.text,
                                   bankId: _selectedBank,
                                 );
 
