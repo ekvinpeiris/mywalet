@@ -139,9 +139,10 @@ class _SavingsScreenState extends State<SavingsScreen> {
                       ),
                       ElevatedButton.icon(
                         onPressed: () async {
-                          final result = await Navigator.push(
+                          final result =  await Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
+                              settings: const RouteSettings(name: '/savings'),
                               builder: (context) => const AddAccountScreen(selectedAccountType: 0),
                             ),
                           );

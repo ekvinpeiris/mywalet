@@ -10,11 +10,30 @@ import 'package:my_wallert/screens/unity_trust_screen.dart';
 import '../services/firebase_auth_service.dart';
 import '../utils/preferences.dart';
 
-class AppNavigation extends StatelessWidget {
-
+class AppNavigation extends StatefulWidget {
   const AppNavigation({
     super.key,
   });
+
+  @override
+  State<AppNavigation> createState() => _AppNavigationState();
+}
+
+class _AppNavigationState extends State<AppNavigation> {
+  String _selectedRoute = '/dashboard';
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context)?.settings.name;
+    if (route != null && route != _selectedRoute) {
+      setState(() {
+
+        print("route : $route");
+        _selectedRoute = route;
+      });
+    }
+  }
 
   Future<void> _handleSignOut(BuildContext context) async {
     final shouldSignOut = await showDialog<bool>(
@@ -97,85 +116,148 @@ class AppNavigation extends StatelessWidget {
                 ),
               ),
               ListTile(
-                leading: const Icon(Icons.dashboard),
-                title: const Text('Dashboard'),
+                leading: Icon(Icons.dashboard, 
+                  color: _selectedRoute == '/dashboard' ? Colors.blue : null),
+                title: Text('Dashboard',
+                  style: TextStyle(
+                    color: _selectedRoute == '/dashboard' ? Colors.blue : null,
+                    fontWeight: _selectedRoute == '/dashboard' ? FontWeight.bold : null,
+                  )),
+                tileColor: _selectedRoute == '/dashboard' ? Colors.blue.withOpacity(0.1) : null,
                 onTap: () {
-                  Navigator.push(
+                  setState(() {
+                    _selectedRoute = '/dashboard';
+                  });                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  DashboardScreen(),
+                      settings: const RouteSettings(name: '/dashboard'),
+                      builder: (context) => DashboardScreen(),
                     ),
                   );
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.savings),
-                title: const Text('Savings'),
+                leading: Icon(Icons.savings,
+                  color: _selectedRoute == '/savings' ? Colors.blue : null),
+                title: Text('Savings',
+                  style: TextStyle(
+                    color: _selectedRoute == '/savings' ? Colors.blue : null,
+                    fontWeight: _selectedRoute == '/savings' ? FontWeight.bold : null,
+                  )),
+                tileColor: _selectedRoute == '/savings' ? Colors.blue.withOpacity(0.1) : null,
                 onTap: () {
-                  Navigator.push(
+                  setState(() {
+                    _selectedRoute = '/savings';
+                  });                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  const SavingsScreen(),
+                      settings: const RouteSettings(name: '/savings'),
+                      builder: (context) => const SavingsScreen(),
                     ),
                   );
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.lock),
-                title: const Text('Fixed Deposits'),
+                leading: Icon(Icons.lock,
+                  color: _selectedRoute == '/fixed-deposits' ? Colors.blue : null),
+                title: Text('Fixed Deposits',
+                  style: TextStyle(
+                    color: _selectedRoute == '/fixed-deposits' ? Colors.blue : null,
+                    fontWeight: _selectedRoute == '/fixed-deposits' ? FontWeight.bold : null,
+                  )),
+                tileColor: _selectedRoute == '/fixed-deposits' ? Colors.blue.withOpacity(0.1) : null,
                 onTap: () {
-                  Navigator.push(
+                  setState(() {
+                    _selectedRoute = '/fixed-deposits';
+                  });                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  const FixedDepositScreen(),
+                      settings: const RouteSettings(name: '/fixed-deposits'),
+                      builder: (context) => const FixedDepositScreen(),
                     ),
                   );
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.lock),
-                title: const Text('Treasury Bill'),
+                leading: Icon(Icons.lock,
+                  color: _selectedRoute == '/treasury-bill' ? Colors.blue : null),
+                title: Text('Treasury Bill',
+                  style: TextStyle(
+                    color: _selectedRoute == '/treasury-bill' ? Colors.blue : null,
+                    fontWeight: _selectedRoute == '/treasury-bill' ? FontWeight.bold : null,
+                  )),
+                tileColor: _selectedRoute == '/treasury-bill' ? Colors.blue.withOpacity(0.1) : null,
                 onTap: () {
-                  Navigator.push(
+                  setState(() {
+                    _selectedRoute = '/treasury-bill';
+                  });                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  const TreasuryBillScreen(),
+                      settings: const RouteSettings(name: '/treasury-bill'),
+                      builder: (context) => const TreasuryBillScreen(),
                     ),
                   );
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.lock),
-                title: const Text('Unity Trust'),
+                leading: Icon(Icons.lock,
+                  color: _selectedRoute == '/unity-trust' ? Colors.blue : null),
+                title: Text('Unity Trust',
+                  style: TextStyle(
+                    color: _selectedRoute == '/unity-trust' ? Colors.blue : null,
+                    fontWeight: _selectedRoute == '/unity-trust' ? FontWeight.bold : null,
+                  )),
+                tileColor: _selectedRoute == '/unity-trust' ? Colors.blue.withOpacity(0.1) : null,
                 onTap: () {
-                  Navigator.push(
+                  setState(() {
+                    _selectedRoute = '/unity-trust';
+                  });                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  const UnityTrustScreen(),
+                      settings: const RouteSettings(name: '/unity-trust'),
+                      builder: (context) => const UnityTrustScreen(),
                     ),
                   );
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.account_balance),
-                title: const Text('Banks'),
+                leading: Icon(Icons.account_balance,
+                  color: _selectedRoute == '/banks' ? Colors.blue : null),
+                title: Text('Banks',
+                  style: TextStyle(
+                    color: _selectedRoute == '/banks' ? Colors.blue : null,
+                    fontWeight: _selectedRoute == '/banks' ? FontWeight.bold : null,
+                  )),
+                tileColor: _selectedRoute == '/banks' ? Colors.blue.withOpacity(0.1) : null,
                 onTap: () {
-                  Navigator.push(
+                  setState(() {
+                    _selectedRoute = '/banks';
+                  });                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  const BankScreen()
+                      settings: const RouteSettings(name: '/banks'),
+                      builder: (context) => const BankScreen(),
                     ),
                   );
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
+                leading: Icon(Icons.settings,
+                  color: _selectedRoute == '/settings' ? Colors.blue : null),
+                title: Text('Settings',
+                  style: TextStyle(
+                    color: _selectedRoute == '/settings' ? Colors.blue : null,
+                    fontWeight: _selectedRoute == '/settings' ? FontWeight.bold : null,
+                  )),
+                tileColor: _selectedRoute == '/settings' ? Colors.blue.withOpacity(0.1) : null,
                 onTap: () {
-                  Navigator.push(
+                  setState(() {
+                    _selectedRoute = '/settings';
+                  });                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  const SettingsScreen(),
+                      settings: const RouteSettings(name: '/settings'),
+                      builder: (context) => const SettingsScreen(),
                     ),
                   );
                 },

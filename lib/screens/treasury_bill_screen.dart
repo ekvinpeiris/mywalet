@@ -140,9 +140,10 @@ class _TreasuryBillScreenState extends State<TreasuryBillScreen> {
                       ),
                       ElevatedButton.icon(
                         onPressed: () async {
-                          final result = await Navigator.push(
+                          final result =  await Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
+                              settings: const RouteSettings(name: '/treasury-bill'),
                               builder: (context) => const AddAccountScreen(selectedAccountType: 2),
                             ),
                           );

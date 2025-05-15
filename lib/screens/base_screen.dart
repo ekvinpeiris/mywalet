@@ -15,7 +15,7 @@ class _BaseScreenState extends State<BaseScreen> {
     return Scaffold(
       drawer: MediaQuery.of(context).size.width >= 600
           ? null
-          : const AppNavigation(
+          :  AppNavigation(
       ),
       body: Row(
         children: [

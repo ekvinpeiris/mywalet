@@ -122,9 +122,11 @@ class _BankScreenState extends State<BankScreen> {
                   ),
                   ElevatedButton.icon(
                     onPressed: () async {
-                      final result = await Navigator.push(
+
+                      final result =  await Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
+                          settings: const RouteSettings(name: '/banks'),
                           builder: (context) => const AddBank(),
                         ),
                       );

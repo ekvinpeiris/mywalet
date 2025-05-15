@@ -249,9 +249,10 @@ class _FixedDepositScreenState extends State<FixedDepositScreen> {
                            // Add Button
                            ElevatedButton.icon(
                             onPressed: _isImporting ? null : () async { // Disable Add button during import
-                              final result = await Navigator.push(
+                              final result =  await Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
+                                  settings: const RouteSettings(name: '/fixed-deposits'),
                                   builder: (context) => const AddAccountScreen(selectedAccountType: 1),
                                 ),
                               );
